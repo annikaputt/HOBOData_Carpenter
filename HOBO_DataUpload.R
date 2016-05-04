@@ -7,13 +7,18 @@
 # range is listed as date_date in the file name. This will result in the proper site name
 # in the data frame.
 
+
+# !!!!!!!!!! Note...if plots aren't working it's likely a date conversion issue from when I was combining csv files in excel
+# In excel the date column has to be formated as mm/dd/yyyy hh:mm
+# Note: Both marshall and mcdonald were flooded between from march 2015 to the end of the summer when the rsv went back down
+# It's really tricky to see because it might not be rsv water; just backwatered creek water so temps might be ok
+
 # Created August 28, 2015
 # A Putt
 #############################
 library(lubridate)
 library(plyr)
 
-# !!!!!!!!!! Note...if plots aren't working it's likely a date conversion issue from when I was combining csv files in excel
 
 # Upload all csv files from the UploadData folder
 file_path  <- list.files(path="UploadData", pattern="*.csv") # Pull all files
@@ -33,19 +38,7 @@ for(i in 1:length(file_path)){
 temps <- do.call("rbind",file_list) # Combine into one large data frame
 rownames(temps) <- 1:nrow(temps) # Get rid of the long row names that are automatically created
 temps <- arrange(temps, fulldate) # If you look at the header this will show whether all of the dates are proper
-
-
-# Get rid of data from when the tidbits were in the air before and after deployment
 temps$justdate <- format(temps$fulldate,"%Y-%m-%d")
-temps <- subset(temps, !(justdate %in% c("2014-09-03","2015-04-10","2015-04-11","2015-04-12","2015-04-13",
-                                         "2015-04-14","2015-04-15")))
-
-# Get rid of hurleybridge outlier
-hurl <- subset(temps,site=="hurleybridge")
-hurl <- subset(hurl, !(justdate %in% c("2015-04-20","2015-04-21","2015-07-27","2015-07-28")))
-temps <- subset(temps,site!="hurleybridge")
-temps <- rbind(temps,hurl)
-
 
 # Uploard reservoir elevation data
 elevations <- read.csv("AllDataForExport_copiedfromreservoirlevelsproject.csv",head=TRUE)
